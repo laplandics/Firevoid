@@ -7,7 +7,6 @@ public static class G
     public enum DisposeMethod { Scoped, Full }
     
     private static readonly Dictionary<Type, ServiceRegistration> RegistrationsMap = new();
-    private static readonly HashSet<Type> Requests = new();
     
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void Reset() => Dispose(DisposeMethod.Full);
@@ -25,17 +24,12 @@ public static class G
 
     public static T Resolve<T>() where T : class
     {
-        if (!Requests.Add(typeof(T)))
-        {throw new Exception($"Type {typeof(T)} has been already requested. Circular dependency detected"); }
-        
         T result = null;
-        if (RegistrationsMap.TryGetValue(typeof(T), out var service))
-        { result = service as T; }
+        if (RegistrationsMap.TryGetValue(typeof(T), out var registration))
+        { result = registration.Service as T; }
         
-        if (result != null) Requests.Remove(typeof(T));
-        else throw new Exception($"Requested type {typeof(T)} was not registered");
-        
-        return result;
+        if (result != null) return result;
+        throw new Exception($"Requested type {typeof(T)} was not registered");
     }
     
     public static void Dispose(DisposeMethod method)
@@ -44,7 +38,6 @@ public static class G
         { registration.Value.Dispose(); }
 
         if (method != DisposeMethod.Full) return;
-        Requests.Clear();
         RegistrationsMap.Clear();
     }
 

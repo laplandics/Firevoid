@@ -1,7 +1,7 @@
 ﻿using System.Collections;
+using Data;
 using R3;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Utils;
 
 namespace Boot
@@ -16,59 +16,25 @@ namespace Boot
             G.Register(new Coroutines());
             G.Register(new Scenes());
             G.Register(new Input());
-            G.Register(new Data.Provider());
             
-            // Remove temporal editor code
-            #if UNITY_EDITOR
+            G.Register(new DataProvider());
             
-            Debug.LogWarning("Remove temporal editor code (Switch to active scene)");
-            var sceneName = SceneManager.GetActiveScene().name;
-            
-            switch (sceneName)
-            {
-                case nameof(Scenes.SceneNames.Menu):
-                    G.Resolve<Coroutines>().Start(LoadMenu(), out _);
-                    return;
-                
-                case nameof(Scenes.SceneNames.Game):
-                    G.Resolve<Coroutines>().Start(LoadGame(), out _);
-                    return;
-            }
-
-            if (sceneName != nameof(Scenes.SceneNames.Boot)) return;
-            
-            #endif
-            //
-            
-            G.Resolve<Coroutines>().Start(LoadMenu(), out _);
-        }
-
-        private IEnumerator BeforeEveryLoad()
-        {
-            yield return G.Resolve<Data.Provider>().LoadData();
-            
-            
-            G.Dispose(G.DisposeMethod.Scoped);
-            
-            yield return null;
+            G.Resolve<Coroutines>().Start(LoadScene(Const.MENU_SCENE_NAME), out _);
         }
         
-        private IEnumerator LoadMenu()
+        private IEnumerator LoadScene(string sceneName)
         {
-            yield return BeforeEveryLoad();
-
-            var menu = new MenuBoot();
-            menu.Boot(out var onExit);
-            onExit.Subscribe(x => G.Resolve<Coroutines>().Start(LoadGame(), out _));
-        }
-
-        private IEnumerator LoadGame()
-        {
-            yield return BeforeEveryLoad();
+            G.Dispose(G.DisposeMethod.Scoped);
+            yield return new WaitForSeconds(2f);
             
-            var game = new GameBoot();
-            game.Boot(out var onExit);
-            onExit.Subscribe(x => G.Resolve<Coroutines>().Start(LoadMenu(), out _));
+            yield return G.Resolve<DataProvider>().LoadStageData(sceneName);
+            
+            yield return G.Resolve<Scenes>().Load(sceneName);
+            yield return null;
+            
+            var sceneBoot = Object.FindAnyObjectByType<SceneBoot>();
+            sceneBoot.Boot(out var onExit);
+            onExit.Subscribe(exitParams => G.Resolve<Coroutines>().Start(LoadScene(exitParams.NextSceneName), out _));
         }
     }
 }

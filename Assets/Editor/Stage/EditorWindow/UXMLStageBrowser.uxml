@@ -1,0 +1,9 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement name="STAGE_BROWSER" style="flex-grow: 1; flex-direction: row;">
+        <ui:VisualElement name="BrowserContent" style="flex-grow: 0; width: 35%; min-width: 180px;">
+            <ui:ListView name="StagesList" header-title="" show-foldout-header="false" allow-add="false" allow-remove="false" show-bound-collection-size="false" show-border="false" style="border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px; border-top-color: rgb(47, 47, 47); border-left-color: rgb(47, 47, 47); border-right-color: rgb(47, 47, 47); border-bottom-color: rgb(15, 15, 15); background-color: rgb(32, 32, 32); flex-grow: 1;"/>
+            <ui:Button text="Scene to Stage" name="SceneToStageButton" focusable="false" style="margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="StageContent" style="flex-grow: 1; margin-left: 2px; margin-top: 2px; margin-right: 2px; margin-bottom: 2px;"/>
+    </ui:VisualElement>
+</ui:UXML>

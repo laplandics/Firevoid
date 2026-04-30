@@ -5,13 +5,11 @@ namespace Utils
 {
     public class Scenes
     {
-        public enum SceneNames { Boot, Game, Menu }
-        
-        public IEnumerator Load(SceneNames sceneName)
+        public IEnumerator Load(string sceneName)
         {
             yield return SceneManager.LoadSceneAsync("Boot");
             yield return null;
-            yield return SceneManager.LoadSceneAsync(sceneName.ToString());
+            yield return SceneManager.LoadSceneAsync(sceneName);
             yield return null;
         }
     }
